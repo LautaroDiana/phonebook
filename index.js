@@ -45,7 +45,14 @@ app.get('/info', (request, response) => {
 })
 
 app.get('/api/persons', (request, response) => {
-    response.json(persons)
+  response.json(persons)
+})
+
+app.get('/api/persons/:id', (request, response) => {
+  const id = request.params.id
+  console.log(id, typeof id)
+
+  response.json(persons.find(person => person.id === id))
 })
 
 const PORT = process.env.PORT || 3001
