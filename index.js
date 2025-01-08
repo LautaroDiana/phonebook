@@ -3,7 +3,7 @@ const express = require('express')
 const app = express()
 
 // Hardcoded data MUST DELETE LATER
-const persons = [
+let persons = [
     { 
       "id": "1",
       "name": "Arto Hellas", 
@@ -59,6 +59,20 @@ app.get('/api/persons/:id', (request, response) => {
   } else {
     response.status(400).json({error: "id not found"})
   }
+})
+
+app.delete('/api/persons/:id', (request, response) => {
+  const id = request.params.id
+
+  const personToDelete = persons.find(person => person.id === id)
+
+  if (personToDelete) {
+    persons = persons.filter(person => person.id !== id)
+    response.status(204).json({message: `Person with id=${id} deleted`})
+  } else {
+    response.status(400).json({error: "id not found"})
+  }
+    
 })
 
 const PORT = process.env.PORT || 3001
