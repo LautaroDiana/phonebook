@@ -38,6 +38,7 @@ const idGen = () => {
 
 // Middleware
 app.use(express.json())
+app.use(express.static('dist'))
 app.use(cors())
 
 morgan.token('body-content', function getBodyContent(request, response) {
@@ -47,9 +48,7 @@ morgan.token('body-content', function getBodyContent(request, response) {
 app.use(morgan(':method :url :status :response-time ms - :body-content'))
 
 app.get('/', (request, response) => {
-    response.json({
-        hello: "World"
-    })
+    response.send("hello!")
 })
 
 app.get('/info', (request, response) => {
