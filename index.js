@@ -1,4 +1,5 @@
 const express = require('express')
+const morgan = require('morgan')
 
 const app = express()
 
@@ -36,6 +37,12 @@ const idGen = () => {
 
 // Middleware
 app.use(express.json())
+
+morgan.token('body-content', function getBodyContent(request, response) {
+  const content = JSON.stringify(request.body)
+  return content
+})
+app.use(morgan(':method :url :status :response-time ms - :body-content'))
 
 app.get('/', (request, response) => {
     response.json({
