@@ -26,6 +26,14 @@ let persons = [
     }
 ]
 
+// Functions
+
+const idGen = () => {
+  let id = Math.floor(Math.random()*1000000000000)
+
+  return String(id)
+}
+
 // Middleware
 app.use(express.json())
 
@@ -61,6 +69,28 @@ app.get('/api/persons/:id', (request, response) => {
   }
 })
 
+app.post('/api/persons', (request, response) => {
+  const {name, number} = request.body
+
+  if (!name || !number) {
+    response.json({error: "invalid format"})
+  } else if (persons.find(person => person.name === name)) {
+    response.json({error: `${name} already exists on Phonebook`})
+  } else {
+
+    const newPerson = {
+      id: idGen(),
+      name,
+      number: String(number)
+    }
+  
+    persons.push(newPerson)
+    response.json(newPerson)  
+
+  }
+
+})
+
 app.delete('/api/persons/:id', (request, response) => {
   const id = request.params.id
 
@@ -72,7 +102,7 @@ app.delete('/api/persons/:id', (request, response) => {
   } else {
     response.status(400).json({error: "id not found"})
   }
-    
+
 })
 
 const PORT = process.env.PORT || 3001
