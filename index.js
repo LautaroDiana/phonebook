@@ -52,7 +52,13 @@ app.get('/api/persons/:id', (request, response) => {
   const id = request.params.id
   console.log(id, typeof id)
 
-  response.json(persons.find(person => person.id === id))
+  const person = persons.find(person => person.id === id)
+
+  if (person) {
+    response.json(person)
+  } else {
+    response.status(400).json({error: "id not found"})
+  }
 })
 
 const PORT = process.env.PORT || 3001
