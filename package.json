@@ -6,7 +6,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:ui": "rm -rf dist && cd ../../fullStackOpenLautaroDiana/part2/phonebook && npm run build && cp -r dist ../../../phonebook/phonebook",
+    "build:ui": "rm -rf dist && cd ../../fullStackOpenLautaroDiana/part2/phonebook && npm run build && cp dist ../../../phonebook/phonebook && rm -rf dist",
     "deploy:full": "git add . && git commit -m 'Deploy' && git push"
   },
   "author": "",
@@ -18,6 +18,8 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.21.2",
+    "mongodb": "^6.12.0",
+    "mongoose": "^8.9.3",
     "morgan": "^1.10.0"
   }
 }
