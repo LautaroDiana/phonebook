@@ -3,22 +3,9 @@ const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 const mongoose = require('mongoose')
+const Person = require('./models/person')
 
 const app = express()
-
-// MongoDB/Mongoose
-
-const url = process.env.MONGODB_URI
-
-mongoose.set('strictQuery', false)
-mongoose.connect(url)
-
-const personSchema = new mongoose.Schema({
-  name: String,
-  number: String
-})
-
-const Person = mongoose.model("Person", personSchema)
 
 // Hardcoded data MUST DELETE LATER
 let persons = [
@@ -90,13 +77,13 @@ app.get('/api/persons/:id', (request, response) => {
   const id = request.params.id
   console.log(id, typeof id)
 
-  const person = persons.find(person => person.id === id)
-
-  if (person) {
-    response.json(person)
-  } else {
-    response.status(400).json({error: "id not found"})
-  }
+  Person.findById(id)
+    .then(person => {
+      response.json(person)
+    })
+    .catch(error => {
+      response.status(400).json({error: error.message})
+    })
 })
 
 app.post('/api/persons', (request, response) => {
