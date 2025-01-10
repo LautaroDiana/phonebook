@@ -1,8 +1,24 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const mongoose = require('mongoose')
 
 const app = express()
+
+// MongoDB/Mongoose
+
+const url = process.env.MONGODB_URI
+
+mongoose.set('strictQuery', false)
+mongoose.connect(url)
+
+const personSchema = new mongoose.Schema({
+  name: String,
+  number: String
+})
+
+const Person = mongoose.model("Person", personSchema)
 
 // Hardcoded data MUST DELETE LATER
 let persons = [
@@ -47,21 +63,27 @@ morgan.token('body-content', function getBodyContent(request, response) {
 })
 app.use(morgan(':method :url :status :response-time ms - :body-content'))
 
+// Endpoints
+
 app.get('/', (request, response) => {
     response.send("hello!")
 })
 
 app.get('/info', (request, response) => {
-  const personsLength = persons.length
+  Person.find({}).then(persons => {
+    const personsLength = persons.length
 
-  const date = new Date()
-
-  const message = `<p>Phonebook has info for ${personsLength} people</p><p>${date}</p>`
-  response.send(message)
+    const date = new Date()
+  
+    const message = `<p>Phonebook has info for ${personsLength} people</p><p>${date}</p>`
+    response.send(message)  
+  })
 })
 
 app.get('/api/persons', (request, response) => {
-  response.json(persons)
+  Person.find({}).then(persons => {
+    response.json(persons)
+  })
 })
 
 app.get('/api/persons/:id', (request, response) => {
