@@ -87,38 +87,40 @@ app.get('/api/persons/:id', (request, response) => {
 })
 
 app.post('/api/persons', (request, response) => {
+
   const {name, number} = request.body
-
-  if (!name || !number) {
-    response.json({error: "invalid format"})
-  } else if (persons.find(person => person.name === name)) {
-    response.json({error: `${name} already exists on Phonebook`})
-  } else {
-
-    const newPerson = {
-      id: idGen(),
-      name,
-      number: String(number)
-    }
   
-    persons.push(newPerson)
-    response.json(newPerson)  
-
+  if (!name || !number) {
+    return response.status(500).json({error: "invalid format"})
   }
 
+  const person = new Person({
+    name,
+    number
+  })
+  person.save().then(savedPerson => response.json(savedPerson))
 })
 
 app.delete('/api/persons/:id', (request, response) => {
   const id = request.params.id
 
-  const personToDelete = persons.find(person => person.id === id)
 
-  if (personToDelete) {
-    persons = persons.filter(person => person.id !== id)
-    response.status(204).json({message: `Person with id=${id} deleted`})
-  } else {
-    response.status(400).json({error: "id not found"})
-  }
+  Person.findByIdAndDelete(id)
+    .then(result => response.status(204).json({message: `id ${id} deleted`}))
+    .catch(error => response.json({
+      message: `id ${id} not found`,
+      error: error.message
+    }))
+
+
+  // const personToDelete = persons.find(person => person.id === id)
+
+  // if (personToDelete) {
+  //   persons = persons.filter(person => person.id !== id)
+  //   response.status(204).json({message: `Person with id=${id} deleted`})
+  // } else {
+  //   response.status(400).json({error: "id not found"})
+  // }
 
 })
 
