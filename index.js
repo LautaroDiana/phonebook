@@ -73,7 +73,7 @@ app.get('/api/persons', (request, response) => {
   })
 })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
   const id = request.params.id
   console.log(id, typeof id)
 
@@ -81,9 +81,7 @@ app.get('/api/persons/:id', (request, response) => {
     .then(person => {
       response.json(person)
     })
-    .catch(error => {
-      response.status(400).json({error: error.message})
-    })
+    .catch(error => next(error))
 })
 
 app.post('/api/persons', (request, response) => {
@@ -101,30 +99,36 @@ app.post('/api/persons', (request, response) => {
   person.save().then(savedPerson => response.json(savedPerson))
 })
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
   const id = request.params.id
-
 
   Person.findByIdAndDelete(id)
     .then(result => response.status(204).json({message: `id ${id} deleted`}))
-    .catch(error => response.json({
-      message: `id ${id} not found`,
-      error: error.message
-    }))
-
-
-  // const personToDelete = persons.find(person => person.id === id)
-
-  // if (personToDelete) {
-  //   persons = persons.filter(person => person.id !== id)
-  //   response.status(204).json({message: `Person with id=${id} deleted`})
-  // } else {
-  //   response.status(400).json({error: "id not found"})
-  // }
-
+    .catch(error => next(error))
 })
 
-const PORT = process.env.PORT || 3001
+app.put('/api/persons/:id', (request, response, next) => {
+  const id = request.params.id
+  const {name, number} = request.body
+
+  Person.findByIdAndUpdate(id, {...number})
+    .then(prevPerson => response.json(prevPerson))
+    .catch(error => next(error))
+})
+
+// Error handler 
+const errorHandler = (error, request, response, next) => {
+  console.error(error)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({error: "Malformatted id"})
+  }
+
+  next(error)
+}
+app.use(errorHandler)
+
+const PORT = process.env.PORT ? process.env.PORT : 3001
 
 app.listen(PORT, () => {
     console.log(`Server started at http://localhost:${PORT}. To terminate the server, press Ctrl+C`)
