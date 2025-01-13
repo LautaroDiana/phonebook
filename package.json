@@ -6,7 +6,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:ui": "rm -rf dist && cd ../../fullStackOpenLautaroDiana/part2/phonebook && npm run build && cp dist ../../../phonebook/phonebook && rm -rf dist",
+    "build:ui": "rm -rf dist && cd ../../fullStackOpenLautaroDiana/part2/phonebook && npm run build && cp -r dist ../../../phonebook/phonebook && rm -rf dist",
     "deploy:full": "npm run build:ui && git add . && git commit -m 'Deploy' && git push"
   },
   "author": "",
